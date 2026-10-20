@@ -77,6 +77,61 @@ python run.py
 
 ---
 
+## 模型权重与数据集
+
+本仓库**不含**训练好的模型权重与产线数据集——两者都与具体产线绑定，
+且数据集涉及企业数据不宜公开。代码本身完整可运行，但要得到 README 顶部的
+实测指标，需要按下面任一路径准备。
+
+### 路径 A：使用已有权重（最快）
+
+把训练好的 `best.pt`（YOLO11-OBB 权重）放到任意位置，然后在 `.env` 中配置绝对路径：
+
+```ini
+QC_YOLO_WEIGHTS=/your/path/to/best.pt
+QC_YOLO_CONF=0.25
+QC_YOLO_IMGSZ=640
+QC_YOLO_DEVICE=0
+```
+
+> 未配置权重时不会报错：`QC_BACKEND=auto` 会自动降级到确定性像素后端，
+> 服务仍可启动、演示页仍可跑通，只是检测结果来自传统图像处理而非模型。
+
+### 路径 B：自己训练
+
+数据集目录需满足 YOLO-OBB 格式：
+
+```
+<数据根>/
+├── data.yaml            nc=12，names 为 12 个类别名
+├── images/train/*.bmp   训练图像
+├── images/val/*.bmp     验证图像
+└── labels/train|val/*.txt  格式：class x1 y1 x2 y2 x3 y3 x4 y4（归一化）
+```
+
+```bash
+# 0) 可选：先把大图缩到长边 1280，解码内存降 18 倍（推荐）
+python scripts/prepare_dataset.py --src <数据根> --max-side 1280
+
+# 1) 训练（12 类，以 DOTA 预训练的 yolo11m-obb.pt 为基座）
+python scripts/train.py --data-root <数据根> --epochs 100 --imgsz 640 --batch 8 --device 0
+
+# 2) 产出权重在 runs/catalyst_obb/weights/best.pt，填进 .env 即可
+```
+
+### 数据规模参考
+
+本项目实测所用数据：
+
+| 划分 | 图像 | 缺陷实例 |
+|---|---|---|
+| train | 446 | 846 |
+| val | 113 | 209 |
+| 无缺陷负样本 | 42 | — |
+
+类别分布高度不均衡（端面裂纹占 38.7%，损坏类仅 1 例），
+小样本类别的单项指标不具备统计意义，详见「已知局限」。
+
 ## 评测与验证
 
 ```bash
