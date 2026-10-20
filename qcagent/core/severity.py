@@ -37,6 +37,8 @@
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import json
 import os
 from pathlib import Path
@@ -87,7 +89,7 @@ def grade_absolute(area_mm2: float, max_len_mm: float) -> str:
 # 样品区域估计
 # --------------------------------------------------------------------------
 
-_CACHE_PATH = Path(__file__).resolve().parent / "data" / "sample_regions.json"
+_CACHE_PATH = settings.SAMPLE_REGIONS_PATH
 _cache: dict[str, dict[str, Any]] | None = None
 
 

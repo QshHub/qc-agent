@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from qc_tools import DEFAULT_GSD_MM_PER_PX, _severity_of
+from qcagent.core.tools import DEFAULT_GSD_MM_PER_PX, _severity_of
 
 # 期望等级由规则推导：与 qc_tools.SEVERITY_RULES 同源，杜绝"评测集与实现不一致"
 def expected_grade(area_mm2: float, max_len_mm: float) -> str:

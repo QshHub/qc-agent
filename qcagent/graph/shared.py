@@ -28,8 +28,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from qc_knowledge import list_taxonomy, lookup_standard, match_taxonomy_by_severity
-from qc_tools import get_image_info, segment_defects
+from qcagent.core.knowledge import list_taxonomy, lookup_standard, match_taxonomy_by_severity
+from qcagent.core.tools import get_image_info, segment_defects
 
 # --------------------------------------------------------------------------
 # Agent 基础配置

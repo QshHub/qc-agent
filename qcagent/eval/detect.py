@@ -46,13 +46,13 @@ if sys.platform == "win32":
     except Exception:  # noqa: BLE001
         pass
 
-from qc_yolo import DEFAULT_CONF, DEFAULT_IMGSZ, DEFAULT_WEIGHTS, run_yolo
+from qcagent.core.yolo import DEFAULT_CONF, DEFAULT_IMGSZ, DEFAULT_WEIGHTS, run_yolo
 
 DATA_ROOT = Path(r"E:\yolodata")
 
 # 类别名映射表：由模型实际的 names 动态构建（不按索引硬映射）。
 # 模块加载时持有一个"按数据集 class_id"的默认表；跑评测时会用模型真实 names 覆盖。
-from qc_yolo import CLASS_META, DATA_CLASS_KEYS, build_class_map  # noqa: E402
+from qcagent.core.yolo import CLASS_META, DATA_CLASS_KEYS, build_class_map  # noqa: E402
 
 _CLASS_NAMES: dict[int, str] = {
     cid: CLASS_META[key][0] for cid, key in DATA_CLASS_KEYS.items()

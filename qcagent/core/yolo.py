@@ -437,7 +437,7 @@ def run_yolo(
         )
 
     # ---- 相对化严重度（不依赖 GSD，解决未标定相机的场景）----
-    from qc_severity import apply_relative_grading
+    from qcagent.core.severity import apply_relative_grading
 
     partial: dict[str, Any] = {
         "image_path": str(Path(image_path).resolve()),

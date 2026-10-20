@@ -144,7 +144,7 @@ def main() -> None:
 
     # ---------- 模式：批量检测并写入缓存 ----------
     if args.populate_cache:
-        from qc_severity import save_sample_region
+        from qcagent.core.severity import save_sample_region
 
         splits = ["train", "val"] if args.split == "all" else [args.split]
         total = 0

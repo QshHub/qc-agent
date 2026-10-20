@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import math
 import os
 from pathlib import Path
@@ -247,7 +249,7 @@ def annotate_defects(
 
     if mode in ("auto", "yolo"):
         try:
-            from qc_yolo import YoloUnavailable, run_yolo
+            from qcagent.core.yolo import YoloUnavailable, run_yolo
 
             try:
                 result = run_yolo(image_path, gsd_mm_per_px, conf=conf)
@@ -492,7 +494,7 @@ def make_sample_image(
 if __name__ == "__main__":
     import sys as _sys
 
-    out_dir = Path(__file__).resolve().parent / "data" / "samples"
+    out_dir = settings.SAMPLES_DIR
 
     # 命令行用法：
     #   python qc_tools.py            -> 生成 4 张样例图并自测分割

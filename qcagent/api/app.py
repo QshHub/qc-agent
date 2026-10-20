@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import asyncio
 import json
 import logging
@@ -39,7 +41,7 @@ from pydantic import BaseModel, ConfigDict, Field
 # 环境变量加载（必须在读取配置之前）
 # --------------------------------------------------------------------------
 
-_ENV_FILE = Path(__file__).resolve().parent / ".env"
+_ENV_FILE = settings.ENV_FILE
 load_dotenv(_ENV_FILE, override=False)
 
 # Windows 控制台默认 GBK，输出含 mm² 等字符会抛 UnicodeEncodeError
@@ -57,14 +59,14 @@ from agentscope.model import DeepSeekChatModel  # noqa: E402
 from agentscope.permission import PermissionBehavior, PermissionDecision  # noqa: E402
 from agentscope.tool import FunctionTool, Toolkit  # noqa: E402
 
-from qc_events import EventTranslator, sse_pack, translate_stream  # noqa: E402
-from qc_knowledge import (  # noqa: E402
+from qcagent.core.events import EventTranslator, sse_pack, translate_stream  # noqa: E402
+from qcagent.core.knowledge import (  # noqa: E402
     criteria_status,
     list_taxonomy,
     lookup_standard,
     match_taxonomy_by_severity,
 )
-from qc_store import (  # noqa: E402
+from qcagent.core.store import (  # noqa: E402
     REJECT_CATEGORIES,
     claim_review,
     decide_review,
@@ -75,7 +77,7 @@ from qc_store import (  # noqa: E402
     review_stats,
     save_report,
 )
-from qc_tools import (  # noqa: E402
+from qcagent.core.tools import (  # noqa: E402
     annotate_defects,
     get_image_info,
     make_sample_image,
@@ -148,7 +150,7 @@ API_KEY = os.getenv("DEEPSEEK_API_KEY", "").strip()
 RESULT_STORE: dict[str, dict[str, Any]] = {}
 
 # 报告归档目录（第四阶段替换为数据库；这里先落 JSON 文件，保证可追溯）
-REPORT_DIR = Path(__file__).resolve().parent / "data" / "reports"
+REPORT_DIR = settings.REPORTS_DIR
 
 
 # --------------------------------------------------------------------------
@@ -1089,7 +1091,7 @@ async def graph_qc(req: GraphRunRequest) -> GraphRunResponse:
     因此评测指标可以直接对比。
     """
     try:
-        from qc_graph_service import get_graph
+        from qcagent.graph.service import get_graph
     except ImportError as exc:
         raise HTTPException(
             status_code=501,
@@ -1153,7 +1155,7 @@ async def graph_qc_resume(req: GraphResumeRequest) -> GraphRunResponse:
     try:
         from langgraph.types import Command
 
-        from qc_graph_service import get_graph
+        from qcagent.graph.service import get_graph
     except ImportError as exc:
         raise HTTPException(status_code=501, detail=f"LangGraph 路线不可用: {exc}") from exc
 
@@ -1220,7 +1222,7 @@ async def graph_qc_resume(req: GraphResumeRequest) -> GraphRunResponse:
 async def graph_state(thread_id: str) -> dict[str, Any]:
     """查看任务当前处于哪个阶段、是否已挂起。用于前端"恢复任务"入口。"""
     try:
-        from qc_graph_service import get_graph
+        from qcagent.graph.service import get_graph
     except ImportError as exc:
         raise HTTPException(status_code=501, detail=f"LangGraph 路线不可用: {exc}") from exc
 
@@ -1249,7 +1251,7 @@ async def graph_state(thread_id: str) -> dict[str, Any]:
 async def graph_info() -> dict[str, Any]:
     """运维观测：检查点库位置、行数、thread 数，以及图的节点拓扑。"""
     try:
-        from qc_graph_service import checkpoint_info, get_graph
+        from qcagent.graph.service import checkpoint_info, get_graph
         from langgraph.checkpoint.memory import InMemorySaver  # noqa: F401
     except ImportError as exc:
         raise HTTPException(status_code=501, detail=f"LangGraph 路线不可用: {exc}") from exc
@@ -1270,7 +1272,7 @@ async def graph_info() -> dict[str, Any]:
 @app.post("/qc/sample", summary="生成样例图像（无真实数据时用于联调）")
 async def qc_sample(req: SampleRequest) -> dict[str, Any]:
     name = req.filename or f"sample_{req.defect_kind}.png"
-    out = Path(__file__).resolve().parent / "data" / "samples" / name
+    out = settings.SAMPLES_DIR / name
     try:
         path = make_sample_image(str(out), defect_kind=req.defect_kind)
     except Exception as exc:  # noqa: BLE001
@@ -1289,7 +1291,7 @@ async def qc_sample(req: SampleRequest) -> dict[str, Any]:
 @app.get("/qc/samples", summary="列出已存在的样例图像路径")
 async def qc_samples() -> dict[str, Any]:
     """不生成新图，只列出目录里已有的样例，便于直接拿去调 /qc/inspect。"""
-    sample_dir = Path(__file__).resolve().parent / "data" / "samples"
+    sample_dir = settings.SAMPLES_DIR
     files = sorted(str(p.resolve()) for p in sample_dir.glob("*.png")) if sample_dir.exists() else []
     return {"sample_dir": str(sample_dir), "exists": sample_dir.exists(), "files": files}
 

@@ -27,12 +27,12 @@ import os
 import threading
 from typing import Any
 
-from qc_knowledge import GRADE_RULES
-from qc_tools import segment_defects
+from qcagent.core.knowledge import GRADE_RULES
+from qcagent.core.tools import segment_defects
 
 # 共享定义：prompt、报告 schema、工具集工厂
 # （从 qc_api 抽出来，避免为了一个 Pydantic 模型把 FastAPI 全家桶拖进 LangGraph 路线）
-from qc_agent_shared import AGENT_NAME, MODEL_NAME, InspectionReport, SYSTEM_PROMPT, build_toolkit  # noqa: F401
+from qcagent.graph.shared import AGENT_NAME, MODEL_NAME, InspectionReport, SYSTEM_PROMPT, build_toolkit  # noqa: F401
 
 
 def _build_evidence_block(
@@ -191,8 +191,8 @@ if __name__ == "__main__":
         except Exception:  # noqa: BLE001
             pass
 
-    from qc_knowledge import lookup_standard
-    from qc_tools import annotate_defects
+    from qcagent.core.knowledge import lookup_standard
+    from qcagent.core.tools import annotate_defects
 
     sample = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                           "data", "samples", "sample_crack.png")

@@ -27,6 +27,8 @@ Agent 据此应拒绝给出合格/不合格结论、转人工判定。
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 from pathlib import Path
 from typing import Any
 
@@ -238,7 +240,7 @@ GRADE_RULES: list[dict[str, Any]] = [
 # 留空的字段保持 PENDING，lookup_standard 会如实返回"尚未录入"。
 # --------------------------------------------------------------------------
 
-CRITERIA_PATH = Path(__file__).resolve().parent / "configs" / "qc_criteria.yaml"
+CRITERIA_PATH = settings.CRITERIA_PATH
 _CRITERIA_META: dict[str, Any] = {}
 
 
@@ -315,8 +317,7 @@ def load_criteria(path: Path | None = None, *, verbose: bool = False) -> dict[st
     th = data.get("grade_thresholds") or {}
     if th:
         try:
-            import qc_severity
-
+            import qcagent.core.severity as qc_severity
             rules = []
             for grade in ("critical", "major"):
                 cfg = th.get(grade) or {}

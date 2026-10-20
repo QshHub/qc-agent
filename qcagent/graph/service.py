@@ -20,15 +20,17 @@ SqliteSaver 需要线程内唯一的 sqlite3.Connection。FastAPI 是多线程�
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import os
 import sqlite3
 import threading
 from pathlib import Path
 from typing import Any
 
-from qc_graph import build_graph
+from qcagent.graph.graph import build_graph
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = settings.PROJECT_ROOT
 CHECKPOINT_DB = Path(os.getenv("QC_CHECKPOINT_DB", str(BASE_DIR / "data" / "qc_checkpoints.db")))
 
 _local = threading.local()

@@ -18,6 +18,8 @@
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import json
 import sqlite3
 import threading
@@ -26,7 +28,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-DB_PATH = Path(__file__).resolve().parent / "data" / "qc_agent.db"
+DB_PATH = settings.DB_PATH
 
 # 复核驳回原因分类：这些分类是后续做 Bad Case 归因与提示词优化的输入
 REJECT_CATEGORIES: dict[str, str] = {

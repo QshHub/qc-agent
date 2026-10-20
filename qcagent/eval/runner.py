@@ -24,6 +24,8 @@
 
 from __future__ import annotations
 
+from qcagent import settings  # noqa: E402  统一路径常量
+
 import argparse
 import json
 import re
@@ -41,11 +43,11 @@ if sys.platform == "win32":
     except Exception:  # noqa: BLE001
         pass
 
-from qc_eval_cases import CASES, resolve_cases
-from qc_tools import annotate_defects, make_sample_image
+from qcagent.eval.cases import CASES, resolve_cases
+from qcagent.core.tools import annotate_defects, make_sample_image
 
-BASE_DIR = Path(__file__).resolve().parent
-SAMPLE_DIR = BASE_DIR / "data" / "samples"
+BASE_DIR = settings.PROJECT_ROOT
+SAMPLE_DIR = settings.SAMPLES_DIR
 API = "http://127.0.0.1:8000"
 
 # 加载 .env：让评测进程与服务读到同一套检测配置（权重/conf/imgsz/后端）。

@@ -37,8 +37,8 @@ from __future__ import annotations
 import uuid
 from typing import Any, Literal, TypedDict
 
-from qc_knowledge import DEFECT_TAXONOMY, lookup_standard
-from qc_tools import annotate_defects
+from qcagent.core.knowledge import DEFECT_TAXONOMY, lookup_standard
+from qcagent.core.tools import annotate_defects
 
 try:
     from langgraph.checkpoint.memory import InMemorySaver
@@ -211,7 +211,7 @@ def node_judge(state: QCState) -> dict[str, Any]:
             "trace": _trace_update(state, "judge", "skipped", "前置阶段失败，转人工"),
         }
 
-    from qc_judge import run_judge
+    from qcagent.graph.judge import run_judge
 
     try:
         report = run_judge(
@@ -292,7 +292,7 @@ def node_gate(state: QCState) -> dict[str, Any]:
 
 def node_archive(state: QCState) -> dict[str, Any]:
     """归档：落库并创建复核任务（若尚未被人工处理）。"""
-    from qc_store import save_report
+    from qcagent.core.store import save_report
 
     report = state.get("report") or {}
 
