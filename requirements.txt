@@ -1,0 +1,28 @@
+# QC-Agent 依赖清单
+# 安装：pip install -r requirements.txt
+# 国内加速：pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# ---------- Agent 执行层（AgentScope）----------
+# 开发与实测所用版本：2.0.11.dev0
+#   = 上游 commit 976e2ffc（git describe: v2.0.10-17-g976e2ffc）
+#   即以 editable 模式装在项目内的 agentscope/ 源码树，比 v2.0.10 多 17 个提交。
+# 若要完全复现实测行为，请用 git 源安装（需要网络与 git）：
+#   pip install "agentscope @ git+https://github.com/agentscope-ai/agentscope.git@976e2ffc"
+# 否则按下面的发布版约束安装即可；若遇 API 差异，优先怀疑此处版本不一致。
+agentscope>=2.0.10
+
+# ---------- 业务编排层（LangGraph）----------
+# 若只跑 AgentScope 单 Agent 路线，这两项可不装；
+# /graph/* 端点会在缺依赖时返回 501 并提示。
+langgraph>=1.2.0
+langgraph-checkpoint-sqlite>=3.0.0
+
+# ---------- Web 服务 ----------
+fastapi>=0.110
+uvicorn[standard]>=0.27
+
+# ---------- 数据与工具 ----------
+pydantic>=2.7
+python-dotenv>=1.0
+numpy>=1.24
+pillow>=10.0
